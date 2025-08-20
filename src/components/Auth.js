@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
-  signOut, 
   onAuthStateChanged,
   GoogleAuthProvider,
   signInWithPopup
 } from 'firebase/auth';
 import { auth } from '../firebase';
 import './Auth.css';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -17,15 +17,21 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
+      if (user) {
+        const redirectTo = location.state?.from?.pathname || '/dashboard';
+        navigate(redirectTo, { replace: true });
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate, location.state]);
 
   const handleEmailAuth = async (e) => {
     e.preventDefault();
@@ -59,30 +65,13 @@ const Auth = () => {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
   if (loading) {
     return <div className="auth-container">読み込み中...</div>;
   }
 
   if (user) {
-    return (
-      <div className="auth-container">
-        <div className="auth-card">
-          <h2>ログイン中</h2>
-          <p>ようこそ、{user.email}さん！</p>
-          <button onClick={handleSignOut} className="auth-button signout">
-            ログアウト
-          </button>
-        </div>
-      </div>
-    );
+    // ここには通常来ない（onAuthStateChangedで遷移）
+    return null;
   }
 
   return (
