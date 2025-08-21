@@ -1,8 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
 
 // Firebase設定（環境変数から取得）
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -17,5 +17,8 @@ const app = initializeApp(firebaseConfig);
 
 // Authenticationを初期化
 export const auth = getAuth(app);
+
+// Firestoreを初期化
+export const db = getFirestore(app);
 
 export default app;
