@@ -7,8 +7,10 @@ import { useAuth } from '../context/AuthContext';
 import './Profile.css';
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [userPosts, setUserPosts] = useState([]);
-  const [displayName, setDisplayName] = useState(user?.displayName || '');
+  const [displayName, setDisplayName] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
@@ -16,8 +18,13 @@ const Profile = () => {
     totalLikes: 0,
     joinDate: null
   });
-  const navigate = useNavigate();
-  const { user } = useAuth();
+
+  // userが変更されたときにdisplayNameを更新
+  useEffect(() => {
+    if (user) {
+      setDisplayName(user.displayName || '');
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
